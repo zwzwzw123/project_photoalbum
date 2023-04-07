@@ -30,4 +30,16 @@ class AlbumServiceTest {
         Album resAlbum = albumService.getAlbum(saveAlbum.getAlbumId());
         assertEquals("테스트",resAlbum.getAlbumName());
     }
+
+    @Test
+    void findbyAlbum() {
+        Album album = new Album();
+        album.setAlbumName("앨범이름 테스트");
+        Album saveAlbum = albumRepository.save(album);
+
+        Album resAlbum = albumService.findbyAlbumname(saveAlbum.getAlbumName());
+        assertEquals("앨범이름 테스트",resAlbum.getAlbumName());
+
+
+    }
 }
