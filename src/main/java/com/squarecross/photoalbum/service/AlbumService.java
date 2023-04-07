@@ -31,7 +31,7 @@ public class AlbumService {
         }
     }
 
-    public AlbumDto findbyAlbumname(String albumName){
+    public AlbumDto findbyAlbumName(String albumName){
         Optional<Album> res = albumRepository.findByAlbumName(albumName);
         if(res.isPresent()){
             AlbumDto albumDto = AlbumMapper.convertToDto(res.get());
