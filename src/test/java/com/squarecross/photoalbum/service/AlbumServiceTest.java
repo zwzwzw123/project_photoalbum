@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -90,5 +92,29 @@ class AlbumServiceTest {
         assertFalse(Files.exists(Paths.get(Constants.PATH_PREFIX+"/photos/thumb/"+albumDto1.getAlbumId())));
     }
 
+    @Test
+    void testAlbumRepository() throws InterruptedException {
+        Album album = new Album();
+        Album album1 = new Album();
+        album.setAlbumName("aaa");
+        album1.setAlbumName("aab");
+
+        albumRepository.save(album);
+        TimeUnit.SECONDS.sleep(1);
+        albumRepository.save(album1);
+
+        //최신정렬, 두번째로 생성한 앨범이 먼저 출력되야함
+        List<Album> resDate = albumRepository.findByAlbumNameContainingOrderByCreatedAtDesc("aa");
+        assertEquals("aab", resDate.get(0).getAlbumName());
+        assertEquals("aaa", resDate.get(1).getAlbumName());
+        assertEquals(2,resDate.size());
+
+        //앨범명 정렬, aaa->aab로 출력되야함
+        List<Album> resName = albumRepository.findByAlbumNameContainingOrderByAlbumNameAsc("aa");
+        assertEquals("aaa", resName.get(0).getAlbumName());
+        assertEquals("aab", resName.get(1).getAlbumName());
+        assertEquals(2,resName.size());
+
+    }
 
 }
