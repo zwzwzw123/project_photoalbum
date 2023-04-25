@@ -7,8 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
-
 @RestController
 @RequestMapping("/albums")
 public class AlbumController {
@@ -17,25 +15,24 @@ public class AlbumController {
     AlbumService albumService;
 
     @RequestMapping(value = "/{albumId}", method = RequestMethod.GET)
-    public ResponseEntity<AlbumDto> getAlbum(@PathVariable("albumId") final long albumId){
+    public ResponseEntity<AlbumDto> getAlbum(@PathVariable("albumId") final Long albumId){
         AlbumDto album = albumService.getAlbum(albumId);
-        return new ResponseEntity<>(album, HttpStatus.OK);
+        return new ResponseEntity<AlbumDto>(album, HttpStatus.OK);
     }
 
+    //Query String으로 albumId받는 메서드
     @RequestMapping(value = "/query", method = RequestMethod.GET)
-    public  ResponseEntity<AlbumDto> getAlbumByQuery(@RequestParam final long albumId){
-        return new ResponseEntity<>(albumService.getAlbum(albumId), HttpStatus.OK);
+    public ResponseEntity<AlbumDto> getAlbumByQuery(@RequestParam(value = "albumId") final Long albumId){
+        AlbumDto albumDto = albumService.getAlbum(albumId);
+        return new ResponseEntity<AlbumDto>(albumDto,HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/json_body")
-    public ResponseEntity<AlbumDto> getAlbumByJson(@RequestBody final AlbumDto albumDto){
-        AlbumDto album = albumService.getAlbum(albumDto.getAlbumId());
-        return new ResponseEntity<>(album, HttpStatus.OK);
+    //Json Body로 albumId를 받는 메서드
+    @RequestMapping(value = "/json_body", method = RequestMethod.POST)
+    public ResponseEntity<AlbumDto> getAlbumByJson(@RequestBody final AlbumDto  albumDto){
+        AlbumDto albumdto = albumService.getAlbum(albumDto.getAlbumId());
+        return new ResponseEntity<AlbumDto>(albumdto,HttpStatus.OK);
     }
 
-    @RequestMapping(value = "", method = RequestMethod.POST)
-    public ResponseEntity<AlbumDto> createAlbum(@RequestBody final AlbumDto albumDto) throws IOException {
-        AlbumDto saveAlbumDto = albumService.createAlbum(albumDto);
-        return new ResponseEntity<>(saveAlbumDto, HttpStatus.OK);
-    }
+
 }

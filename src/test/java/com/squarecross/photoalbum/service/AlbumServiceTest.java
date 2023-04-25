@@ -3,7 +3,6 @@ package com.squarecross.photoalbum.service;
 import com.squarecross.photoalbum.domain.Album;
 import com.squarecross.photoalbum.domain.Photo;
 import com.squarecross.photoalbum.dto.AlbumDto;
-import com.squarecross.photoalbum.mapper.AlbumMapper;
 import com.squarecross.photoalbum.repository.AlbumRepository;
 import com.squarecross.photoalbum.repository.PhotoRepository;
 import org.junit.jupiter.api.Test;
@@ -19,15 +18,11 @@ class AlbumServiceTest {
 
     @Autowired
     AlbumRepository albumRepository;
-
     @Autowired
     AlbumService albumService;
 
     @Autowired
     PhotoRepository photoRepository;
-
-    @Autowired
-    AlbumMapper albumMapper;
 
     @Test
     void getAlbum() {
@@ -35,18 +30,17 @@ class AlbumServiceTest {
         album.setAlbumName("테스트");
         Album saveAlbum = albumRepository.save(album);
 
-        AlbumDto resAlbum = albumService.getAlbum(saveAlbum.getAlbumId());
+        AlbumDto resAlbum =albumService.getAlbum(saveAlbum.getAlbumId());
         assertEquals("테스트",resAlbum.getAlbumName());
     }
 
     @Test
-    void findbyAlbumname() {
+    void getAlbumName() {
         Album album = new Album();
-        album.setAlbumName("앨범이름 테스트");
+        album.setAlbumName("test");
         Album saveAlbum = albumRepository.save(album);
-
-        AlbumDto resAlbum = albumService.findbyAlbumName(saveAlbum.getAlbumName());
-        assertEquals("앨범이름 테스트",resAlbum.getAlbumName());
+        Album resAlbum = albumService.getAlbumName(saveAlbum.getAlbumName());
+        assertEquals("test",resAlbum.getAlbumName());
     }
 
     @Test
@@ -67,5 +61,6 @@ class AlbumServiceTest {
 
         assertEquals(2,photoRepository.countByAlbum_AlbumId(saveAlbum.getAlbumId()));
     }
+
 
 }

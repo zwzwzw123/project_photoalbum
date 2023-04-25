@@ -8,5 +8,7 @@ import java.util.Optional;
 
 @Repository
 public interface AlbumRepository extends JpaRepository<Album, Long> {
-    Optional<Album> findByAlbumName(String name);
+    //앨범명으로 앨범 테이블을 검색하는 메서드
+    Optional<Album> findByalbumName(String albumName);
+
 }

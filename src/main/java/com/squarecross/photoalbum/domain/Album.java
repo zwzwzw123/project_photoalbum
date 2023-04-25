@@ -1,7 +1,6 @@
 package com.squarecross.photoalbum.domain;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -10,7 +9,6 @@ import java.util.Date;
 import java.util.List;
 @Getter
 @Setter
-@NoArgsConstructor
 @Entity
 @Table(name = "album", schema = "photo_album", uniqueConstraints = {@UniqueConstraint(columnNames = "album_id")})
 public class Album {
@@ -27,5 +25,7 @@ public class Album {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "album", cascade = CascadeType.ALL)
     private List<Photo> photos;
+
+    public Album(){};
 
 }
