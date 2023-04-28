@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -117,6 +118,25 @@ public class AlbumService {
         }
         return albumDtos;
     }
+
+    //1. 입력된 albumId가존재하는 지 체크
+    //  - 없으면 NoSuchElementException
+    //2. 입력받는 albumId DB 조회 -> Domain 객체 받기
+    //3. 받은 Domain객체에서 Setter로 수정된 앨범명으로 변경해주기
+    //4. 업데이트 된 앨범 Domain 객체 저장하기
+    //5. 업데이트 된 앨범 dto출력하기
+    public AlbumDto changeName(Long AlbumId, AlbumDto albumDto){
+        Optional<Album> album = this.albumRepository.findById(AlbumId);
+        if(album.isEmpty()){
+            throw new NoSuchElementException(String.format("AlbumId '%d'가 존재하지 않습니다.",AlbumId ));
+        }
+
+        Album updateAlbum = album.get();
+        updateAlbum.setAlbumName(albumDto.getAlbumName());
+        Album saveAlbum = this.albumRepository.save(updateAlbum);
+        return AlbumMapper.convertToDto(saveAlbum);
+    }
+
 
 
 

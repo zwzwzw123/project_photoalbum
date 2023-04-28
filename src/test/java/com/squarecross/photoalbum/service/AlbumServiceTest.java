@@ -117,4 +117,23 @@ class AlbumServiceTest {
 
     }
 
+    @Test
+    void testChangeAlbumName() throws IOException {
+        //앨범생성
+        AlbumDto albumDto = new AlbumDto();
+        albumDto.setAlbumName("변경 전");
+        AlbumDto res = albumService.createAlbum(albumDto);
+
+        //생성된 앨범 아이디 추출
+        Long albumId = res.getAlbumId();
+        AlbumDto updateDto = new AlbumDto();
+        updateDto.setAlbumName("변경 후");
+        albumService.changeName(albumId, updateDto);
+
+        AlbumDto updatedDto = albumService.getAlbum(albumId);
+
+        //앨범명이 변경되었는지 확인
+        assertEquals("변경 후",updatedDto.getAlbumName());
+    }
+
 }
