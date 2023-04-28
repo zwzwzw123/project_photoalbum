@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -136,4 +137,22 @@ class AlbumServiceTest {
         assertEquals("변경 후",updatedDto.getAlbumName());
     }
 
+    @Test
+    void testDeleteAlbum() throws IOException {
+        Long albumId = 4L;
+
+        albumService.deleteAlbum(albumId);
+        List<Photo> delPhotos = photoRepository.findByAlbum_AlbumId(albumId);
+
+        for(Photo photo : delPhotos){
+            assertFalse(Files.exists(Paths.get(Constants.PATH_PREFIX+photo.getOriginalUrl())));
+            assertFalse(Files.exists(Paths.get(Constants.PATH_PREFIX+photo.getThumbUrl())));
+        }
+
+        assertFalse(Files.exists(Paths.get(Constants.PATH_PREFIX+"/photos/original/"+albumId)));
+        assertFalse(Files.exists(Paths.get(Constants.PATH_PREFIX+"/photos/thumb/"+albumId)));
+
+        assertEquals(Optional.empty(), albumRepository.findById(albumId));
+
+    }
 }

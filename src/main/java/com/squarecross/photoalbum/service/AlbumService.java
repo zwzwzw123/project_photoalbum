@@ -119,16 +119,16 @@ public class AlbumService {
         return albumDtos;
     }
 
-    //1. 입력된 albumId가존재하는 지 체크
+    //1. 입력된 albumId가 존재하는지 체크
     //  - 없으면 NoSuchElementException
     //2. 입력받는 albumId DB 조회 -> Domain 객체 받기
-    //3. 받은 Domain객체에서 Setter로 수정된 앨범명으로 변경해주기
+    //3. 받은 Domain 객체에서 Setter로 수정된 앨범명으로 변경해주기
     //4. 업데이트 된 앨범 Domain 객체 저장하기
     //5. 업데이트 된 앨범 dto출력하기
-    public AlbumDto changeName(Long AlbumId, AlbumDto albumDto){
-        Optional<Album> album = this.albumRepository.findById(AlbumId);
+    public AlbumDto changeName(Long albumId, AlbumDto albumDto){
+        Optional<Album> album = this.albumRepository.findById(albumId);
         if(album.isEmpty()){
-            throw new NoSuchElementException(String.format("AlbumId '%d'가 존재하지 않습니다.",AlbumId ));
+            throw new NoSuchElementException(String.format("AlbumId '%d'가 존재하지 않습니다.",albumId ));
         }
 
         Album updateAlbum = album.get();
@@ -137,7 +137,36 @@ public class AlbumService {
         return AlbumMapper.convertToDto(saveAlbum);
     }
 
+    //1. 입력받은 albumId가 존재하는지 체크
+    // - 없으면 NoSuchElementException
+    //2. 입력받은 albumId DB조회 -> Domain객체받기
+    //3. 받은 Album 객체의 albumId로 Photo 조회 -> List<Photo> 객체 받기
+    //4. albumId참조 Photo의 thum_url, original_url경로 이미지 삭제, albumId경로 폴더 삭제
+    //5. DB내 albumId인 Album, Photo 삭제
+    public void deleteAlbum(Long albumId) throws IOException {
+         Optional<Album> album = this.albumRepository.findById(albumId);
+         if(album.isEmpty()){
+             throw new NoSuchElementException(String.format("AlbumId '%d'가 존재하지 않습니다.",albumId));
+         }
+        Album deleteAlbum = album.get();
+        List<Photo> deletePhotos = photoRepository.findByAlbum_AlbumId(deleteAlbum.getAlbumId());
 
+        for(Photo photo : deletePhotos){
+            deletePhoto(photo);
+        }
+        deleteAlbumDirectories(deleteAlbum);
+        albumRepository.deleteById(deleteAlbum.getAlbumId());
+        }
+
+    public void deletePhoto(Photo photo) throws IOException {
+        Files.deleteIfExists(Paths.get(Constants.PATH_PREFIX+photo.getOriginalUrl()));
+        Files.deleteIfExists(Paths.get(Constants.PATH_PREFIX+photo.getThumbUrl()));
+    }
+
+    public void deleteAlbumDirectories(Album album) throws IOException {
+        Files.deleteIfExists(Paths.get(Constants.PATH_PREFIX+"/photos/original/"+album.getAlbumId()));
+        Files.deleteIfExists(Paths.get(Constants.PATH_PREFIX+"/photos/thumb/"+album.getAlbumId()));
+    }
 
 
 }

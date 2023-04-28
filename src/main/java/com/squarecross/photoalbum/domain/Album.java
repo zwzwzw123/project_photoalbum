@@ -23,7 +23,7 @@ public class Album {
     @Column(name = "album_name", unique = false, nullable = false)
     private String albumName;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "album", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "album", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Photo> photos;
 
     public Album(){};
