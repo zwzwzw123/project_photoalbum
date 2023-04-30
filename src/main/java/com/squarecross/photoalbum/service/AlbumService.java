@@ -1,5 +1,6 @@
 package com.squarecross.photoalbum.service;
 
+import com.squarecross.photoalbum.Constants;
 import com.squarecross.photoalbum.domain.Album;
 import com.squarecross.photoalbum.domain.Photo;
 import com.squarecross.photoalbum.dto.AlbumDto;
