@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Optional;
 
 @Service
@@ -56,7 +57,7 @@ public class PhotoService {
     // - Original 이미지 파일 /photos/original/{albumId}/filename 디렉토리 저장
     // - Thumbmail 이미지 파일 /photos/thumb/{albumId}/filename 디렉토리 저정
     //4. 파일 저장 성공시 Database에 사진 레코드 Insert
-    public  PhotoDto savePhoto(MultipartFile file, Long albumId){
+    public  PhotoDto savePhoto(MultipartFile file, Long albumId) throws IOException {
         //앨범 아이디가 존재하는지 확인
         Optional<Album> res = albumRepository.findById(albumId);
         if(res.isEmpty()){
@@ -65,10 +66,23 @@ public class PhotoService {
 
         String fileName = file.getOriginalFilename();//파일 이름을 가져옴
         int fileSize = (int)file.getSize();
-        //파일명 존재 체크
-        fileName = getNextFileName(fileName,albumId);
-        //썸네일용 사이즈 축소
-        saveFile(file,albumId,fileName);
+
+        //확장자 확인
+        String[] allowedExtensions = {"jpg", "jpeg", "png", "gif"};
+        String fileExtensions = fileName.substring(fileName.lastIndexOf(".")+1).toLowerCase();
+        if(!Arrays.asList(allowedExtensions).contains(fileExtensions)){
+            throw  new IllegalArgumentException("허용되지 않은 파일 확장자입니다.");
+        }
+
+        //실제 이미지 파일 확인
+        BufferedImage image = ImageIO.read(file.getInputStream());
+        if(image ==null){
+            throw new IllegalArgumentException("이미지 파일이 아닙니다.");
+        }
+
+        fileName = getNextFileName(fileName,albumId);//파일명 존재 체크
+
+        saveFile(file,albumId,fileName);//썸네일용 사이즈 축소
 
         //db에 사진 레코드 생성 & 생성된 앨범dto반환
         Photo photo = new Photo();
@@ -82,6 +96,7 @@ public class PhotoService {
 
     }
 
+    //파일명 존재 유무 체크 및 이름 변경
     private String getNextFileName(String fileName, Long albumId){
         String fileNameNoExt = StringUtils.stripFilenameExtension(fileName); //확장자 추출
         String ext = StringUtils.getFilenameExtension(fileName);//추출한 확장자 제거

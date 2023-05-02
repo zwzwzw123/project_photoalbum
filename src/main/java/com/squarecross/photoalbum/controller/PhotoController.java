@@ -29,7 +29,7 @@ public class PhotoController {
     public ResponseEntity<List<PhotoDto>> uploadPhotos(@PathVariable("albumId") final  Long albumId,
                                                        @RequestParam("photos") MultipartFile[] files ){
         List<PhotoDto> photos = new ArrayList<>();
-        for(MultipartFile file :files){
+        for(MultipartFile file : files){
             PhotoDto photoDto =photoService.savePhoto(file, albumId);
             photos.add(photoDto);
         }
