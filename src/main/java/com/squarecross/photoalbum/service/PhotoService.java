@@ -133,4 +133,16 @@ public class PhotoService {
         }
     }
 
+    //1. 입력된 이미지 아이디로 db조회
+    // - 없으면 Exception
+    //2. 프로젝트 경로를 옆에 붙여 디렉토리 내에서 사진을 불러옴
+    //3. 파일을 Controller로 출력
+    public  File getImageFile(Long photoId){
+        Optional<Photo> res = photoRepository.findById(photoId);
+        if(res.isEmpty()){
+            throw new EntityNotFoundException(String.format("사진ID %d를 찾을 수 없습니다.",photoId));
+        }
+        return new File(Constants.PATH_PREFIX+res.get().getOriginalUrl());
+    }
+
 }
