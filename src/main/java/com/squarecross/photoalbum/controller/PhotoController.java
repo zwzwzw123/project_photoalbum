@@ -76,6 +76,14 @@ public class PhotoController {
         }
     }
 
+    //사진 목록 불러오기 API
+    @GetMapping("")
+    public ResponseEntity<List<PhotoDto>> getPhotoList(@RequestParam(value = "keyword", required = false,defaultValue = "")final String keyword,
+                                                       @RequestParam(value = "sort", required = false, defaultValue = "byDate")final String sort){
+        List<PhotoDto> photoDtos = photoService.getPhotoList(keyword,sort);
+        return new ResponseEntity<>(photoDtos, HttpStatus.OK);
+    }
+
 
 
 }

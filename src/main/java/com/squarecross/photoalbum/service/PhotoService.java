@@ -20,8 +20,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class PhotoService {
@@ -38,8 +38,6 @@ public class PhotoService {
         Optional<Photo> res = photoRepository.findById(photoId);
         if(res.isPresent()){
             PhotoDto photoDto = PhotoMapper.convertToDto(res.get());
-            //앨범Id set으로 주입
-           // photoDto.setAlbumId(photoRepository.findByAlbumId_photoId(photoId));
             return photoDto;
         }else {
             throw new EntityNotFoundException(String.format("사진아이디 '%d'로 조회되지 않습니다.",photoId));
@@ -144,5 +142,30 @@ public class PhotoService {
         }
         return new File(Constants.PATH_PREFIX+res.get().getOriginalUrl());
     }
+
+    //사진 목록 불러오기
+    public List<PhotoDto> getPhotoList(String keyword, String sort){
+        List<Photo> photos;
+        if(Objects.equals(sort,"byName")){
+            photos = photoRepository.findByFileNameContainingOrderByFileNameAsc(keyword);
+        }else if(Objects.equals(sort,"byDate")){
+            photos = photoRepository.findByFileNameContainingOrderByUploadedAtDesc(keyword);
+        }else if(Objects.equals(sort,"byNameDesc")){
+            photos = photoRepository.findByFileNameContainingOrderByFileNameDesc(keyword);
+        }else if(Objects.equals(sort,"byDateAsc")){
+            photos = photoRepository.findByFileNameContainingOrderByUploadedAtAsc(keyword);
+        }else {
+            throw new IllegalArgumentException("알 수 없는 정렬 기준 입니다.");
+        }
+
+        List<PhotoDto> photoDtos = PhotoMapper.converToDtoList(photos);
+
+        for (PhotoDto photoDto : photoDtos){
+            List<Photo> top4 = photoRepository.findTop4ByAlbum_AlbumIdOrderByUploadedAtDesc(photoDto.getPhotoId());
+            photoDto.setThumbUrls(top4.stream().map(Photo::getThumbUrl).map(c -> Constants.PATH_PREFIX + c).collect(Collectors.toList()));
+        }
+        return photoDtos;
+    }
+
 
 }
