@@ -92,6 +92,15 @@ public class PhotoController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    //사진 옮기기 API
+    @PutMapping("/move")
+    public ResponseEntity<List<PhotoDto>> movePhoto(@RequestParam("fromAlbumId") final  Long fromAlbumId,
+                                                    @RequestParam("toAlbumId") final Long toAlbumId,
+                                                    @RequestParam("photoIds") List<Long> photoIds) throws IOException {
+        List<PhotoDto> photoDto = photoService.movePhoto(fromAlbumId, toAlbumId, photoIds);
+        return new ResponseEntity<>(photoDto,HttpStatus.OK);
+    }
+
 
 
 }
