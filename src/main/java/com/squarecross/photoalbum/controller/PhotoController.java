@@ -85,5 +85,13 @@ public class PhotoController {
     }
 
 
+    //사진 삭제 API
+    @DeleteMapping("/{photoId}")
+    public ResponseEntity<Void> deletePhoto(@PathVariable final  Long photoId) throws IOException {
+        photoService.deletePhoto(photoId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+
 
 }

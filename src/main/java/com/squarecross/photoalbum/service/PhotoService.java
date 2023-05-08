@@ -168,4 +168,16 @@ public class PhotoService {
     }
 
 
+    public void deletePhoto(Long photoId) throws IOException {
+        Optional<Photo> photo = photoRepository.findById(photoId);
+        if(photo.isEmpty()){
+            throw new NoSuchElementException(String.format("사진 Id '%d'가 존재하지 않습니다",photoId));
+        }
+        Photo deleltePhoto = photo.get();
+        Files.deleteIfExists(Paths.get(Constants.PATH_PREFIX+deleltePhoto.getOriginalUrl()));
+        Files.deleteIfExists(Paths.get(Constants.PATH_PREFIX+deleltePhoto.getThumbUrl()));
+
+        photoRepository.deleteById(deleltePhoto.getPhotoId());
+
+    }
 }
